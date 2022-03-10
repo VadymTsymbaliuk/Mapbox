@@ -4,15 +4,33 @@
       <div class="row">
         <div class="col-4">
           <b-list-group>
-            <b-list-group-item v-for="user of users" :key="user.id">
+            <b-list-group-item v-for="user of correctUsers" :key="user.id" @mouseover="showInfo">
               <p>{{ user.name }}</p>
               <p>{{ user.address.geo }}</p>
             </b-list-group-item>
           </b-list-group>
         </div>
         <div class="col-8">
-          <MglMap ref="map" container="map-test" :zoom="4" :center="[78.9629, 20.5937]" :accessToken="accessToken" :mapStyle="mapStyle"
-          />
+          <MglMap ref="map" container="map-test" :zoom="1" :center="[-87.661557, 41.893748]" :accessToken="accessToken"
+                  :mapStyle="mapStyle"
+          >
+            <MglMarker v-for="user of correctUsers" :key="user.id"
+                       :coordinates="[user.address.geo.lat, user.address.geo.lng]"
+                       color="blue">
+              <MglPopup v-for="user of correctUsers" :key="user.id" :closeButton="true" :showed="false">
+                  <b-card class="text-center">
+                    <div>
+                      {{ user.name }}
+                      {{ user.phone}}
+                    </div>
+                    <div>
+                      {{user.email}}
+                    </div>
+                  </b-card>
+              </MglPopup>
+            </MglMarker>
+
+          </MglMap>
         </div>
       </div>
     </section>
@@ -21,15 +39,15 @@
 
 <script>
 // import Map from "@/components/Map";
-
-import {MglMap} from "v-mapbox";
+import {MglMap, MglMarker, MglPopup} from "v-mapbox";
+//import mapboxgl from 'mapbox-gl'
 
 export default {
   name: 'App',
   data: () => ({
     users: [],
     accessToken: 'pk.eyJ1IjoidmFkeW10c3ltYmFsaXVrIiwiYSI6ImNsMGtzMThhZTBuOHAzaXF0cnY5d2xlYWgifQ.Rw73JvaFnyty5IILIe_TjQ', // your access token. Needed if you using Mapbox maps-->
-    mapStyle: 'mapbox://styles/examples/cjgiiz9ck002j2ss5zur1vjji'
+    mapStyle: 'mapbox://styles/mapbox/streets-v11',
   }),
   mounted() {
     this.axios
@@ -38,10 +56,25 @@ export default {
           this.users = response.data
         })
   },
+  computed: {
+    correctUsers() {
+      return this.users.filter(user => user.address.geo.lat <= 90 &&
+          user.address.geo.lat >= -90 &&
+          user.address.geo.lng <= 90 &&
+          user.address.geo.lng >= -90)
+    }
+  },
   updated() {
     this.$refs.map.map?.resize()
   },
-  components: {MglMap}
+  methods:{
+    showInfo(e){
+      console.log(e)
+    }
+  },
+  components: {
+    MglMap, MglMarker, MglPopup,
+  }
 }
 </script>
 
