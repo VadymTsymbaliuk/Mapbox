@@ -15,14 +15,11 @@
         </div>
       </div>
     </section>
-
   </div>
 </template>
 
 <script>
-
-
-import Map from "@/components/Map.vue";
+import Map from "@/components/Map";
 
 export default {
   name: 'App',
@@ -33,9 +30,7 @@ export default {
     this.axios
         .get('https://jsonplaceholder.typicode.com/users')
         .then(response => {
-          // this.name = response
           this.users = response.data
-          console.log(this.users)
         })
   },
   components: {Map}
