@@ -1,42 +1,47 @@
 <template>
   <div id="app">
-    <Map />
-    asdfgadfgsasf
+    <section class="container-fluid">
+      <div class="row">
+        <div class="col-4">
+          <b-list-group>
+            <b-list-group-item v-for="user of users" :key="user.id">
+              <p>{{ user.name }}</p>
+              <p>{{ user.address.geo }}</p>
+            </b-list-group-item>
+          </b-list-group>
+        </div>
+        <div class="col-8">
+          <Map/>
+        </div>
+      </div>
+    </section>
+
   </div>
 </template>
 
 <script>
 
 
-
 import Map from "@/components/Map.vue";
-import axios from "core-js/internals/queue";
 
 export default {
   name: 'App',
-  data() {
-    return {
-      user: name,
-    }
-  },
+  data: () => ({
+    users: []
+  }),
   mounted() {
-    axios
+    this.axios
         .get('https://jsonplaceholder.typicode.com/users')
-        .then(response => (this.name = response))
+        .then(response => {
+          // this.name = response
+          this.users = response.data
+          console.log(this.users)
+        })
   },
-  components: {
-    Map,
-  }
+  components: {Map}
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
