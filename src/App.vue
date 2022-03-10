@@ -69,7 +69,7 @@ export default {
   },
   methods:{
     showInfo(e){
-      console.log(e)
+      this.$refs.map.map
     }
   },
   components: {
