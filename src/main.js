@@ -11,6 +11,11 @@ import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+
+import "mapbox-gl/dist/mapbox-gl.css";
+import "v-mapbox/dist/v-mapbox.css";
+import './assets/main.css'
+
 Vue.config.productionTip = false
 
 Vue.use(VueCompositionAPI);

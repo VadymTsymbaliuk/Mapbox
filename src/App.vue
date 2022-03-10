@@ -11,7 +11,8 @@
           </b-list-group>
         </div>
         <div class="col-8">
-          <Map/>
+          <MglMap ref="map" container="map-test" :zoom="4" :center="[78.9629, 20.5937]" :accessToken="accessToken" :mapStyle="mapStyle"
+          />
         </div>
       </div>
     </section>
@@ -19,12 +20,16 @@
 </template>
 
 <script>
-import Map from "@/components/Map";
+// import Map from "@/components/Map";
+
+import {MglMap} from "v-mapbox";
 
 export default {
   name: 'App',
   data: () => ({
-    users: []
+    users: [],
+    accessToken: 'pk.eyJ1IjoidmFkeW10c3ltYmFsaXVrIiwiYSI6ImNsMGtzMThhZTBuOHAzaXF0cnY5d2xlYWgifQ.Rw73JvaFnyty5IILIe_TjQ', // your access token. Needed if you using Mapbox maps-->
+    mapStyle: 'mapbox://styles/examples/cjgiiz9ck002j2ss5zur1vjji'
   }),
   mounted() {
     this.axios
@@ -33,10 +38,17 @@ export default {
           this.users = response.data
         })
   },
-  components: {Map}
+  updated() {
+    this.$refs.map.map?.resize()
+  },
+  components: {MglMap}
 }
 </script>
 
 <style>
+
+#app {
+  height: 100vh;
+}
 
 </style>
