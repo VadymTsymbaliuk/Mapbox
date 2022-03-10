@@ -4,7 +4,8 @@
       <div class="row">
         <div class="col-4">
           <b-list-group>
-            <b-list-group-item v-for="user of correctUsers" :key="user.id" @mouseover="showInfo">
+            <b-list-group-item ref="groupItem" v-for="user of correctUsers" :key="user.id" @mouseover="showInfo"
+                               class="">
               <p>{{ user.name }}</p>
               <p>{{ user.address.geo }}</p>
             </b-list-group-item>
@@ -18,15 +19,15 @@
                        :coordinates="[user.address.geo.lat, user.address.geo.lng]"
                        color="blue">
               <MglPopup v-for="user of correctUsers" :key="user.id" :closeButton="true" :showed="false">
-                  <b-card class="text-center">
-                    <div>
-                      {{ user.name }}
-                      {{ user.phone}}
-                    </div>
-                    <div>
-                      {{user.email}}
-                    </div>
-                  </b-card>
+                <b-card class="text-center">
+                  <div>
+                    {{ user.name }}
+                    {{ user.phone }}
+                  </div>
+                  <div>
+                    {{ user.email }}
+                  </div>
+                </b-card>
               </MglPopup>
             </MglMarker>
 
@@ -67,9 +68,14 @@ export default {
   updated() {
     this.$refs.map.map?.resize()
   },
-  methods:{
-    showInfo(e){
-      this.$refs.map.map
+  methods: {
+    showInfo() {
+      console.log(this.$refs.map)
+      let lat = this.correctUsers[]
+      console.log(lat)
+      let item = this.$refs.groupItem[]
+      console.log(item)
+
     }
   },
   components: {
