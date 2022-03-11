@@ -4,7 +4,9 @@
       <div class="row">
         <div class="col-4">
           <b-list-group>
-            <b-list-group-item ref="groupItem" v-for="user of correctUsers" :key="user.id" @mouseover="showInfo"
+            <b-list-group-item ref="groupItem" v-for="user of correctUsers" :key="user.id"
+                               @mouseover="changeBG"
+                               @click="showInfo"
                                class="">
               <p>{{ user.name }}</p>
               <p>{{ user.address.geo }}</p>
@@ -71,11 +73,14 @@ export default {
   methods: {
     showInfo() {
       console.log(this.$refs.map)
-      let lat = this.correctUsers[]
+      let lat = this.correctUsers[1]
       console.log(lat)
-      let item = this.$refs.groupItem[]
-      console.log(item)
 
+
+    },
+    changeBG(e){
+      // let itemList = this.$refs.groupItem
+     e.target.classList.toggle('bg-primary')
     }
   },
   components: {
