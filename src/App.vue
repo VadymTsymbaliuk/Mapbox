@@ -78,10 +78,12 @@ export default {
       this.users[0].address.geo.lat = lat
       this.users[0].address.geo.lng = lng
     },
-    // showInfo($event, user) {
-    // },
+
     userHover(user) {
-      this.map?.jumpTo({center: user.marker.getLngLat()})
+      this.map?.jumpTo({
+        center: user.marker.getLngLat(),
+        zoom: 2
+      },)
     },
 
     addMarker({marker}, user) {
