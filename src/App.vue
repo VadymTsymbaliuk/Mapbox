@@ -3,11 +3,10 @@
     <section class="container-fluid">
       <div class="row">
         <div class="col-4">
+          <b-select :options="['blue','red']" v-model="color"/>
           <b-list-group>
             <b-list-group-item ref="groupItem" v-for="user of correctUsers" :key="user.id"
-                               @mouseover="changeColor($event, user)"
-                               @click="showInfo($event, user)"
-                               >
+                               @mouseover="userHover(user)">
               <p>{{ user.name }}</p>
               <p>{{ user.address.geo }}</p>
             </b-list-group-item>
@@ -15,11 +14,14 @@
         </div>
         <div class="col-8">
           <MglMap ref="map" container="map-test" :zoom="1" :center="[-87.661557, 41.893748]" :accessToken="accessToken"
-                  :mapStyle="mapStyle"
+                  :mapStyle="mapStyle" @load="loadMap"
           >
             <MglMarker v-for="user of correctUsers" :key="user.id"
                        :coordinates="[user.address.geo.lat, user.address.geo.lng]"
-                       color="blue" @added="addMarker($event, user)" @change="changeColor($event, user)">
+                       @added="addMarker($event, user)" :ref="`marker${user.id}`">
+              <template slot="marker">
+                <div>123456</div>
+              </template>
               <MglPopup v-for="user of correctUsers" :key="user.id" :closeButton="true" :showed="false">
                 <b-card class="text-center">
                   <div>
@@ -48,6 +50,8 @@ import {MglMap, MglMarker, MglPopup} from "v-mapbox";
 export default {
   name: 'App',
   data: () => ({
+    map: null,
+    color: 'blue',
     users: [],
     accessToken: 'pk.eyJ1IjoidmFkeW10c3ltYmFsaXVrIiwiYSI6ImNsMGtzMThhZTBuOHAzaXF0cnY5d2xlYWgifQ.Rw73JvaFnyty5IILIe_TjQ', // your access token. Needed if you using Mapbox maps-->
     mapStyle: 'mapbox://styles/mapbox/streets-v11',
@@ -71,19 +75,19 @@ export default {
     this.$refs.map.map?.resize()
   },
   methods: {
-    showInfo($event, user) {
-      console.log(user)
-
+    loadMap({map}) {
+      this.map = map
     },
-    changeColor({marker}, user) {
-      user.marker = marker
-
+    // showInfo($event, user) {
+    // },
+    userHover(user) {
+      this.map?.jumpTo({center: user.marker.getLngLat()})
     },
-    addMarker({ marker}, user) {
+    // changeColor({marker}, user) {
+    //   user.marker = marker
+    // },
+    addMarker({marker}, user) {
       user.marker = marker
-      console.log(user.marker)
-      user.marker._color = 'red'
-      user.marker.update()
     }
   },
   components: {
