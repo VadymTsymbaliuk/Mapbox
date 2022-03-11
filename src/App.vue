@@ -5,9 +5,9 @@
         <div class="col-4">
           <b-list-group>
             <b-list-group-item ref="groupItem" v-for="user of correctUsers" :key="user.id"
-                               @mouseover="changeBG"
-                               @click="showInfo"
-                               class="">
+                               @mouseover="changeColor($event, user)"
+                               @click="showInfo($event, user)"
+                               >
               <p>{{ user.name }}</p>
               <p>{{ user.address.geo }}</p>
             </b-list-group-item>
@@ -19,7 +19,7 @@
           >
             <MglMarker v-for="user of correctUsers" :key="user.id"
                        :coordinates="[user.address.geo.lat, user.address.geo.lng]"
-                       color="blue">
+                       color="blue" @added="addMarker($event, user)" @change="changeColor($event, user)">
               <MglPopup v-for="user of correctUsers" :key="user.id" :closeButton="true" :showed="false">
                 <b-card class="text-center">
                   <div>
@@ -71,16 +71,19 @@ export default {
     this.$refs.map.map?.resize()
   },
   methods: {
-    showInfo() {
-      console.log(this.$refs.map)
-      let lat = this.correctUsers[1]
-      console.log(lat)
-
+    showInfo($event, user) {
+      console.log(user)
 
     },
-    changeBG(e){
-      // let itemList = this.$refs.groupItem
-     e.target.classList.toggle('bg-primary')
+    changeColor({marker}, user) {
+      user.marker = marker
+
+    },
+    addMarker({ marker}, user) {
+      user.marker = marker
+      console.log(user.marker)
+      user.marker._color = 'red'
+      user.marker.update()
     }
   },
   components: {
