@@ -13,16 +13,17 @@
           </b-list-group>
         </div>
         <div class="col-8">
-          <MglMap ref="map" container="map-test" :zoom="1" :center="[-87.661557, 41.893748]" :accessToken="accessToken"
+          <MglMap ref="map" container="map-test" :zoom="1" :accessToken="accessToken"
                   :mapStyle="mapStyle" @load="loadMap" @click="mapClick"
           >
             <MglMarker v-for="user of users" :key="user.id"
                        :coordinates="[user.address.geo.lng, user.address.geo.lat]"
+                       anchor="bottom"
                        @added="addMarker($event, user)" :ref="`marker${user.id}`">
               <template slot="marker">
-                <div>123456</div>
+                <div class="marker"></div>
               </template>
-              <MglPopup v-for="user of correctUsers" :key="user.id" :closeButton="true" :showed="false">
+              <MglPopup v-for="user of users" :key="user.id" :closeButton="true" :showed="false">
                 <b-card class="text-center">
                   <div>
                     {{ user.name }}
@@ -61,19 +62,10 @@ export default {
         .get('https://jsonplaceholder.typicode.com/users')
         .then(response => {
           this.users = response.data
-
-          // this.users[0].address.geo.lat =  49.408828
-          // this.users[0].address.geo.lng =27.0185571
+          this.map?.jumpTo({center: this.users[0].address.geo})
         })
   },
-  computed: {
-    // correctUsers() {
-    //   return this.users.filter(user => user.address.geo.lat <= 90 &&
-    //       user.address.geo.lat >= -90 &&
-    //       user.address.geo.lng <= 90 &&
-    //       user.address.geo.lng >= -90)
-    // }
-  },
+  computed: {},
   updated() {
     this.$refs.map.map?.resize()
   },
@@ -81,6 +73,7 @@ export default {
     loadMap({map}) {
       this.map = map
     },
+
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
       this.users[0].address.geo.lat = lat
       this.users[0].address.geo.lng = lng
@@ -90,9 +83,7 @@ export default {
     userHover(user) {
       this.map?.jumpTo({center: user.marker.getLngLat()})
     },
-    // changeColor({marker}, user) {
-    //   user.marker = marker
-    // },
+
     addMarker({marker}, user) {
       user.marker = marker
     }
@@ -107,6 +98,15 @@ export default {
 
 #app {
   height: 100vh;
+}
+
+.marker {
+  background-image: url('./assets/map-marker.svg');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
 </style>
