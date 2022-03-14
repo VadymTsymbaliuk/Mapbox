@@ -81,7 +81,7 @@ export default {
     map: null,
     color: 'blue',
     users: [],
-    accessToken: 'pk.eyJ1IjoiZGVueXNrb3JvdiIsImEiOiJjbDBxcXY3emgwanltM2dwZTgwYnJ1NjZuIn0.aLxpefroh_lcQByl3Md-IA', // your access token. Needed if you using Mapbox maps-->
+    accessToken: 'pk.eyJ1IjoidmFkeW10c3ltYmFsaXVrIiwiYSI6ImNsMHFyY3psczI3cGozanB3M3I0dGY0bnUifQ.3tBov4aH3A1qe69cnat-0w', // your access token. Needed if you using Mapbox maps-->
     mapStyle: 'mapbox://styles/mapbox/streets-v11',
     filterText: '',
     activeUser: {}
@@ -100,7 +100,6 @@ export default {
           user.name.toLowerCase().includes(this.filterText.toLowerCase())
       )
     }
-
   },
   updated() {
     this.$refs.map.map?.resize()
@@ -137,10 +136,8 @@ export default {
       user.marker = marker
     },
     changeMapStyle(e) {
-
-      console.log(e.target.value)
       const str = e.target.value
-      console.log(str)
+
       this.map.setStyle(str)
     }
   },
