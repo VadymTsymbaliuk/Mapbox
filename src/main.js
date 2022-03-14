@@ -11,6 +11,7 @@ import {BootstrapVue, IconsPlugin} from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
+import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css';
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "v-mapbox/dist/v-mapbox.css";

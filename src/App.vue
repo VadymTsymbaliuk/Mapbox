@@ -42,6 +42,7 @@
                 </b-card>
               </MglPopup>
             </MglMarker>
+
           </MglMap>
           <div class="position-absolute top-0 bg-light d-flex gap-2" id="menu">
             <div>
@@ -65,6 +66,7 @@
               <label for="navigation-day">navigation day</label>
             </div>
           </div>
+
         </div>
       </div>
     </section>
@@ -74,6 +76,9 @@
 <script>
 
 import {MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl} from "v-mapbox";
+
+import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+
 
 export default {
   name: 'App',
@@ -145,6 +150,26 @@ export default {
     MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl
   }
 }
+let geocoder =  new MapboxGeocoder({
+  accessToken: this.access_token,
+  mapboxgl: mapboxgl,
+  marker: false,
+});
+
+this.map.addControl(geocoder);
+
+geocoder.on("result", (e) => {
+  const marker = new mapboxgl.Marker({
+    draggable: true,
+    color: "#D80739",
+  })
+      .setLngLat(e.result.center)
+      .addTo(this.map);
+  this.center = e.result.center;
+  marker.on("dragend", (e) => {
+    this.center = Object.values(e.target.getLngLat());
+  });
+});
 </script>
 
 <style>
