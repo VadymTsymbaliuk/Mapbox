@@ -11,18 +11,13 @@
                                @click="setActiveUser(user)"
                                v-bind:class="{active: user===selectedUser}"
             >
-              <div class="p-1">
-                <p>{{ user.name }}</p>
-                <div>
-                  <b-button v-b-modal="`user-modal-${user.id}`" @click="editUserName(user)">Show Modal</b-button>
-                  <b-modal :id="`user-modal-${user.id}`" @ok="saveUserName(user)">
-                    <b-form-input v-model="editableUser.name"/>
-                  </b-modal>
-                </div>
+              <div class="d-flex justify-content-between align-items-center text-center p-1">
+                <p class="m-0">{{ user.name }}</p>
+                <b-button v-b-modal="`user-modal-${user.id}`" @click.stop="editUserName(user)">Edit name</b-button>
               </div>
-              <div class="p-1">
-                <p>{{ user.address.geo }}</p>
-              </div>
+              <b-modal :id="`user-modal-${user.id}`" @ok="saveUserName(user)">
+                <b-form-input v-model="editableUser.name"/>
+              </b-modal>
             </b-list-group-item>
           </b-list-group>
         </div>
@@ -117,17 +112,13 @@ export default {
     filterText: '',
     activeUser: {},
     editableUser: {},
-    selectedUser:null
+    selectedUser: null
   }),
 
   mounted() {
     MapboxGL.accessToken = this.accessToken
-    this.axios
-        .get('https://jsonplaceholder.typicode.com/users')
-        .then(response => {
-          this.users = response.data
-          this.map?.jumpTo({center: this.users[0].address.geo})
-        })
+    localStorage.setItem('users':JSON).string
+    this.getUsers()
   },
   computed: {
     filterUser() {
@@ -150,9 +141,17 @@ export default {
           })
       )
     },
+    getUsers() {
+      this.axios
+          .get('https://jsonplaceholder.typicode.com/users')
+          .then(response => {
+            this.users = response.data
+            this.map?.jumpTo({center: this.users[0].address.geo})
+          })
+    },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
-      if(this.selectedUser){
+      if (this.selectedUser) {
         this.selectedUser.address.geo.lat = lat
         this.selectedUser.address.geo.lng = lng
       }
@@ -192,7 +191,7 @@ export default {
     saveUserName(user) {
       user.name = this.editableUser.name
     },
-    setActiveUser(user){
+    setActiveUser(user) {
       this.selectedUser = user
     }
   },
