@@ -21,6 +21,9 @@
           >
             <MglNavigationControl position="bottom-left" :showCompass="false"/>
             <MglScaleControl/>
+            <MglAttributionControl/>
+            <MglGeolocateControl position="top-right"/>
+            <MglFullscreenControl/>
 
             <MglMarker v-for="user of filterUser" :key="user.id"
                        :coordinates="[user.address.geo.lng, user.address.geo.lat]"
@@ -79,7 +82,16 @@
 
 <script>
 
-import {MglMap, MglMarker, MglNavigationControl, MglPopup, MglScaleControl} from "v-mapbox";
+import {
+  MglMap, MglMarker, MglPopup,
+  MglNavigationControl,
+  MglAttributionControl,
+  MglGeolocateControl,
+  MglFullscreenControl,
+  MglScaleControl
+} from "v-mapbox";
+
+import MapboxGL from 'mapbox-gl'
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
@@ -95,16 +107,18 @@ export default {
     filterText: '',
     activeUser: {}
   }),
-  beforeMount() {
-    const geocoder = new MapboxGeocoder({
-      accessToken: this.accessToken,
-      map: this.map, // Set the mapbox-gl instance
-      marker: false,
-      placeholder: 'Search for places in Berkeley'
-    });
-    this.map.addControl(geocoder);
-  },
+  // mounted() {
+  // const geocoder = new MapboxGeocoder({
+  //   accessToken: this.accessToken,
+  //   map: this.map, // Set the mapbox-gl instance
+  //   marker: false,
+  //   placeholder: 'Search for places in Berkeley'
+  // });
+
+  // this.map.addControl(geocoder);
+  // },
   mounted() {
+    MapboxGL.accessToken = this.accessToken
     this.axios
         .get('https://jsonplaceholder.typicode.com/users')
         .then(response => {
@@ -125,6 +139,16 @@ export default {
   methods: {
     loadMap({map}) {
       this.map = map
+
+      console.log(MapboxGL.accessToken)
+      this.map.addControl(
+          new MapboxGeocoder({
+            accessToken: MapboxGL.accessToken,
+            mapboxgl: MapboxGL
+          })
+      )
+
+
     },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
@@ -160,7 +184,9 @@ export default {
     }
   },
   components: {
-    MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl
+    MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl, MglAttributionControl,
+    MglGeolocateControl,
+    MglFullscreenControl,
   }
 }
 </script>
@@ -185,13 +211,13 @@ export default {
   cursor: pointer;
 }
 
-.active {
-  background-image: url('./assets/blue-map_marker.svg');
-  background-size: cover;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-}
+/*.active {*/
+/*  background-image: url('./assets/blue-map_marker.svg');*/
+/*  background-size: cover;*/
+/*  width: 30px;*/
+/*  height: 30px;*/
+/*  border-radius: 50%;*/
+/*  cursor: pointer;*/
+/*}*/
 
 </style>
