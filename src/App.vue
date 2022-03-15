@@ -8,13 +8,15 @@
             <b-list-group-item ref="groupItem" v-for="user of filterUser" :key="user.id"
                                @mouseenter="userHover(user)"
                                @mouseleave="userBlur(user)"
+                               @click="setActiveUser(user)"
+                               v-bind:class="{active: user===selectedUser}"
             >
               <div class="p-1">
                 <p>{{ user.name }}</p>
                 <div>
-                  <b-button v-b-modal="`user-modal-${user.id}`">Show Modal</b-button>
-                  <b-modal :id="`user-modal-${user.id}`">
-                    <b-form-input v-model="user.name" />
+                  <b-button v-b-modal="`user-modal-${user.id}`" @click="editUserName(user)">Show Modal</b-button>
+                  <b-modal :id="`user-modal-${user.id}`" @ok="saveUserName(user)">
+                    <b-form-input v-model="editableUser.name"/>
                   </b-modal>
                 </div>
               </div>
@@ -53,7 +55,6 @@
                 </b-card>
               </MglPopup>
             </MglMarker>
-
           </MglMap>
           <div class="position-absolute top-0 bg-light d-flex gap-2" id="menu">
             <div>
@@ -82,7 +83,6 @@
               <label for="navigation-day">navigation day</label>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -115,7 +115,9 @@ export default {
     accessToken: 'pk.eyJ1IjoidmFkeW10c3ltYmFsaXVrIiwiYSI6ImNsMHFyY3psczI3cGozanB3M3I0dGY0bnUifQ.3tBov4aH3A1qe69cnat-0w', // your access token. Needed if you using Mapbox maps-->
     mapStyle: 'mapbox://styles/mapbox/streets-v11',
     filterText: '',
-    activeUser: {}
+    activeUser: {},
+    editableUser: {},
+    selectedUser:null
   }),
 
   mounted() {
@@ -132,7 +134,7 @@ export default {
       return this.users.filter(user =>
           user.name.toLowerCase().includes(this.filterText.toLowerCase())
       )
-    }
+    },
   },
   updated() {
     this.$refs.map.map?.resize()
@@ -150,8 +152,10 @@ export default {
     },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
-      this.users[0].address.geo.lat = lat
-      this.users[0].address.geo.lng = lng
+      if(this.selectedUser){
+        this.selectedUser.address.geo.lat = lat
+        this.selectedUser.address.geo.lng = lng
+      }
     },
 
     userHover(user) {
@@ -179,12 +183,17 @@ export default {
 
     changeMapStyle(e) {
       const str = e.target.value
-
       this.map.setStyle(str)
     },
 
-    changeUserName() {
-
+    editUserName(user) {
+      this.editableUser = {...user}
+    },
+    saveUserName(user) {
+      user.name = this.editableUser.name
+    },
+    setActiveUser(user){
+      this.selectedUser = user
     }
   },
   components: {
