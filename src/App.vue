@@ -16,8 +16,8 @@
           </b-list-group>
         </div>
         <div class="col-8 position-relative">
-          <MglMap ref="map" container="map-test" :zoom="1" :accessToken="accessToken"
-                  :mapStyle="mapStyle" @load="loadMap" @click="mapClick"
+          <MglMap ref="map" container="map-test" :zoom="1" :access-token="accessToken"
+                  :map-style="mapStyle" @load="loadMap" @click="mapClick"
           >
             <MglNavigationControl position="bottom-left" :showCompass="false"/>
             <MglScaleControl/>
@@ -79,7 +79,7 @@
 
 <script>
 
-import {MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl} from "v-mapbox";
+import {MglMap, MglMarker, MglNavigationControl, MglPopup, MglScaleControl} from "v-mapbox";
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
