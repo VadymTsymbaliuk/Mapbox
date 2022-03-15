@@ -19,7 +19,6 @@
           <MglMap ref="map" container="map-test" :zoom="1" :accessToken="accessToken"
                   :mapStyle="mapStyle" @load="loadMap" @click="mapClick"
           >
-
             <MglNavigationControl position="bottom-left" :showCompass="false"/>
             <MglScaleControl/>
 
@@ -46,23 +45,28 @@
           </MglMap>
           <div class="position-absolute top-0 bg-light d-flex gap-2" id="menu">
             <div>
-              <input id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9" @change="changeMapStyle">
+              <input id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
+                     @change="changeMapStyle">
               <label for="satellite-v9">satellite</label>
             </div>
             <div>
-              <input id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10" @change="changeMapStyle">
+              <input id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10"
+                     @change="changeMapStyle">
               <label for="light-v10">light</label>
             </div>
             <div>
-              <input id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10" @change="changeMapStyle">
+              <input id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10"
+                     @change="changeMapStyle">
               <label for="dark-v10">dark</label>
             </div>
             <div>
-              <input id="outdoors-v11" type="radio" name="rtoggle" value="mapbox://styles/mapbox/outdoors-v11" @change="changeMapStyle">
+              <input id="outdoors-v11" type="radio" name="rtoggle" value="mapbox://styles/mapbox/outdoors-v11"
+                     @change="changeMapStyle">
               <label for="outdoors-v11">streets</label>
             </div>
             <div>
-              <input id="navigation-day" type="radio" name="rtoggle" value="mapbox://styles/mapbox/navigation-day-v1" @change="changeMapStyle">
+              <input id="navigation-day" type="radio" name="rtoggle" value="mapbox://styles/mapbox/navigation-day-v1"
+                     @change="changeMapStyle">
               <label for="navigation-day">navigation day</label>
             </div>
           </div>
@@ -91,6 +95,15 @@ export default {
     filterText: '',
     activeUser: {}
   }),
+  beforeMount() {
+    const geocoder = new MapboxGeocoder({
+      accessToken: this.accessToken,
+      map: this.map, // Set the mapbox-gl instance
+      marker: false,
+      placeholder: 'Search for places in Berkeley'
+    });
+    this.map.addControl(geocoder);
+  },
   mounted() {
     this.axios
         .get('https://jsonplaceholder.typicode.com/users')
@@ -150,26 +163,6 @@ export default {
     MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl
   }
 }
-let geocoder =  new MapboxGeocoder({
-  accessToken: this.access_token,
-  mapboxgl: mapboxgl,
-  marker: false,
-});
-
-this.map.addControl(geocoder);
-
-geocoder.on("result", (e) => {
-  const marker = new mapboxgl.Marker({
-    draggable: true,
-    color: "#D80739",
-  })
-      .setLngLat(e.result.center)
-      .addTo(this.map);
-  this.center = e.result.center;
-  marker.on("dragend", (e) => {
-    this.center = Object.values(e.target.getLngLat());
-  });
-});
 </script>
 
 <style>
