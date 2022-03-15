@@ -3,15 +3,24 @@
     <section class="container-fluid">
       <div class="row">
         <div class="col-4 overflow-scroll">
-          <b-select :options="['blue','red']" v-model="color"/>
-          <b-form-input v-model="filterText"/>
+          <b-form-input v-model="filterText" class="mb-3"/>
           <b-list-group>
             <b-list-group-item ref="groupItem" v-for="user of filterUser" :key="user.id"
                                @mouseenter="userHover(user)"
                                @mouseleave="userBlur(user)"
             >
-              <p>{{ user.name }}</p>
-              <p>{{ user.address.geo }}</p>
+              <div class="p-1">
+                <p>{{ user.name }}</p>
+                <div>
+                  <b-button v-b-modal="`user-modal-${user.id}`">Show Modal</b-button>
+                  <b-modal :id="`user-modal-${user.id}`">
+                    <b-form-input v-model="user.name" />
+                  </b-modal>
+                </div>
+              </div>
+              <div class="p-1">
+                <p>{{ user.address.geo }}</p>
+              </div>
             </b-list-group-item>
           </b-list-group>
         </div>
@@ -30,7 +39,7 @@
                        anchor="bottom"
                        @added="addMarker($event, user)" :ref="`marker${user.id}`">
               <template slot="marker">
-                <div class="marker" :class="{active: user === activeUser}"></div>
+                <div class="marker" :class="{'active-map-marker': user === activeUser}"></div>
               </template>
               <MglPopup v-for="user of filterUser" :key="user.id" :closeButton="true" :showed="false">
                 <b-card class="text-center">
@@ -78,6 +87,7 @@
       </div>
     </section>
   </div>
+
 </template>
 
 <script>
@@ -107,16 +117,7 @@ export default {
     filterText: '',
     activeUser: {}
   }),
-  // mounted() {
-  // const geocoder = new MapboxGeocoder({
-  //   accessToken: this.accessToken,
-  //   map: this.map, // Set the mapbox-gl instance
-  //   marker: false,
-  //   placeholder: 'Search for places in Berkeley'
-  // });
 
-  // this.map.addControl(geocoder);
-  // },
   mounted() {
     MapboxGL.accessToken = this.accessToken
     this.axios
@@ -140,15 +141,12 @@ export default {
     loadMap({map}) {
       this.map = map
 
-      console.log(MapboxGL.accessToken)
       this.map.addControl(
           new MapboxGeocoder({
             accessToken: MapboxGL.accessToken,
             mapboxgl: MapboxGL
           })
       )
-
-
     },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
@@ -165,6 +163,7 @@ export default {
       },)
       this.activeUser = user
     },
+
     userBlur(user) {
       if (user === this.activeUser) {
         this.map?.flyTo({
@@ -177,10 +176,15 @@ export default {
     addMarker({marker}, user) {
       user.marker = marker
     },
+
     changeMapStyle(e) {
       const str = e.target.value
 
       this.map.setStyle(str)
+    },
+
+    changeUserName() {
+
     }
   },
   components: {
@@ -211,13 +215,13 @@ export default {
   cursor: pointer;
 }
 
-/*.active {*/
-/*  background-image: url('./assets/blue-map_marker.svg');*/
-/*  background-size: cover;*/
-/*  width: 30px;*/
-/*  height: 30px;*/
-/*  border-radius: 50%;*/
-/*  cursor: pointer;*/
-/*}*/
+.active-map-marker {
+  background-image: url('./assets/blue-map_marker.svg');
+  background-size: cover;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+}
 
 </style>
