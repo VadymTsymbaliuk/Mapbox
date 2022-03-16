@@ -88,11 +88,13 @@
 <script>
 
 import {
-  MglMap, MglMarker, MglPopup,
-  MglNavigationControl,
   MglAttributionControl,
-  MglGeolocateControl,
   MglFullscreenControl,
+  MglGeolocateControl,
+  MglMap,
+  MglMarker,
+  MglNavigationControl,
+  MglPopup,
   MglScaleControl
 } from "v-mapbox";
 
@@ -117,15 +119,12 @@ export default {
 
   mounted() {
     MapboxGL.accessToken = this.accessToken
-    // const  users = localStorage.setItem(users, JSON.stringify(users))
-    if(localStorage.getItem('users')) {
-      try {
-        this.users.JSON.parse(localStorage.getItem('users'))
-      }catch (e){
-        localStorage.removeItem('users')
-      }
+    console.log(localStorage.getItem('users') || '')
+    const usersJson = localStorage.getItem('users')
 
-    }else {
+    if (usersJson) {
+      this.users = JSON.parse(usersJson)
+    } else {
       this.getUsers()
     }
 
@@ -156,6 +155,8 @@ export default {
           .get('https://jsonplaceholder.typicode.com/users')
           .then(response => {
             this.users = response.data
+
+            localStorage.setItem('users', JSON.stringify(response.data))
             this.map?.jumpTo({center: this.users[0].address.geo})
           })
     },
@@ -200,15 +201,14 @@ export default {
     },
     saveUserName(user) {
       user.name = this.editableUser.name
-      const parsed = JSON.stringify(this.users)
-      localStorage.setItem('users', parsed)
+      localStorage.setItem('users', JSON.stringify(this.users))
     },
     setActiveUser(user) {
       this.selectedUser = user
     }
   },
-  watch:{
-    users(newUsers){
+  watch: {
+    users(newUsers) {
       localStorage.users = newUsers
     }
   },
