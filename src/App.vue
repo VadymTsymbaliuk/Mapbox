@@ -119,15 +119,12 @@ export default {
 
   mounted() {
     MapboxGL.accessToken = this.accessToken
-    console.log(localStorage.getItem('users') || '')
-    const usersJson = localStorage.getItem('users')
 
-    if (usersJson) {
-      this.users = JSON.parse(usersJson)
-    } else {
+    this.getUserFromLocalStorage()
+
+    if (!this.users.length) {
       this.getUsers()
     }
-
   },
   computed: {
     filterUser() {
@@ -140,6 +137,9 @@ export default {
     this.$refs.map.map?.resize()
   },
   methods: {
+    getUserFromLocalStorage() {
+      this.users = JSON.parse(localStorage.getItem('users')) || []
+    },
     loadMap({map}) {
       this.map = map
 
@@ -156,7 +156,6 @@ export default {
           .then(response => {
             this.users = response.data
 
-            localStorage.setItem('users', JSON.stringify(response.data))
             this.map?.jumpTo({center: this.users[0].address.geo})
           })
     },
@@ -200,8 +199,13 @@ export default {
       this.editableUser = {...user}
     },
     saveUserName(user) {
-      user.name = this.editableUser.name
-      localStorage.setItem('users', JSON.stringify(this.users))
+      const userIndex = this.users.indexOf(this.users.find(u => u.id === user.id))
+      // eslint-disable-next-line no-debugger
+      debugger
+      const u = [...this.users]
+      u[userIndex] = this.editableUser
+      console.log(u)
+      this.users = u
     },
     setActiveUser(user) {
       this.selectedUser = user
@@ -209,7 +213,12 @@ export default {
   },
   watch: {
     users(newUsers) {
-      localStorage.users = newUsers
+
+
+
+      const a = newUsers.map(u => Object.assign({},u))
+      console.log(a)
+      localStorage.setItem('users', JSON.stringify(a))
     }
   },
   components: {
