@@ -117,8 +117,18 @@ export default {
 
   mounted() {
     MapboxGL.accessToken = this.accessToken
-    localStorage.setItem('users':JSON).string
-    this.getUsers()
+    // const  users = localStorage.setItem(users, JSON.stringify(users))
+    if(localStorage.getItem('users')) {
+      try {
+        this.users.JSON.parse(localStorage.getItem('users'))
+      }catch (e){
+        localStorage.removeItem('users')
+      }
+
+    }else {
+      this.getUsers()
+    }
+
   },
   computed: {
     filterUser() {
@@ -190,9 +200,16 @@ export default {
     },
     saveUserName(user) {
       user.name = this.editableUser.name
+      const parsed = JSON.stringify(this.users)
+      localStorage.setItem('users', parsed)
     },
     setActiveUser(user) {
       this.selectedUser = user
+    }
+  },
+  watch:{
+    users(newUsers){
+      localStorage.users = newUsers
     }
   },
   components: {
