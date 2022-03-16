@@ -124,6 +124,8 @@ export default {
 
     if (!this.users.length) {
       this.getUsers()
+      const a =  this.users.map(u => Object.assign({}, u))
+      localStorage.setItem('users', JSON.stringify(a))
     }
   },
   computed: {
@@ -198,25 +200,66 @@ export default {
     editUserName(user) {
       this.editableUser = {...user}
     },
+
     saveUserName(user) {
       const userIndex = this.users.indexOf(this.users.find(u => u.id === user.id))
       // eslint-disable-next-line no-debugger
       debugger
       const u = [...this.users]
-      u[userIndex] = this.editableUser
-      console.log(u)
-      this.users = u
+      u[userIndex].name = this.editableUser.name
+
+      const deepCopyFunction = (inObject) => {
+        let outObject, value, key
+
+        if (typeof inObject !== "object" || inObject === null) {
+          return inObject // Return the value if inObject is not an object
+        }
+
+        // Create an array or object to hold the values
+        outObject = Array.isArray(inObject) ? [] : {}
+
+        for (key in inObject) {
+          value = inObject[key]
+
+          // Recursively (deep) copy for nested objects, including arrays
+          outObject[key] = deepCopyFunction(value)
+        }
+
+        return outObject
+      }
+
+      // this.users = [...u]
+      this.users = deepCopyFunction(u)
+      // this.users = u.map(u => Object.assign({}, u))
+      console.log(u, this.users)
+
+      // localStorage.setItem('users', JSON.stringify(this.users))
     },
+
     setActiveUser(user) {
       this.selectedUser = user
-    }
+    },
+    //
+    // deepCopy(inObject) {
+    //   let outObject, value, key
+    //
+    //   if (typeof inObject !== "object" || inObject === null) {
+    //     return inObject
+    //   }
+    //
+    //   outObject = Array.isArray(inObject) ? [] : {}
+    //
+    //   for (key in inObject) {
+    //     value = inObject[key]
+    //     outObject[key] = this.deepCopy(value)
+    //   }
+    //   return outObject
+    // },
+
   },
   watch: {
     users(newUsers) {
-
-
-
-      const a = newUsers.map(u => Object.assign({},u))
+      const a =  newUsers.map(u => Object.assign({}, u))
       console.log(a)
       localStorage.setItem('users', JSON.stringify(a))
     }
