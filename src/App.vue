@@ -197,7 +197,7 @@ export default {
       this.editableUser = {...user}
     },
 
-    saveUserName: function (user) {
+    saveUserName(user) {
       const userIndex = this.users.indexOf(this.users.find(u => u.id === user.id))
 
       const u = [...this.users]
