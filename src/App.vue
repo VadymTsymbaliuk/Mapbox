@@ -51,7 +51,7 @@
               </MglPopup>
             </MglMarker>
           </MglMap>
-          <div class="position-absolute top-0 bg-light d-flex gap-2" id="menu">
+          <div class="position-absolute top-0 bottom-auto bg-light bg-opacity-75 d-flex gap-2 p-2 rounded-2 mt-2 ml-2" id="menu">
             <div>
               <input id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
                      @change="changeMapStyle">
