@@ -126,13 +126,14 @@ export default {
   mounted() {
     MapboxGL.accessToken = this.accessToken
 
-    this.getUserFromLocalStorage()
+    this.getUsersFromFireBase()
+    // this.getUserFromLocalStorage()
 
-    if (!this.users.length) {
-      this.getUsers()
-      const a = this.users.map(u => Object.assign({}, u))
-      localStorage.setItem('users', JSON.stringify(a))
-    }
+    // if (!this.users.length) {
+    //   this.getUsers()
+    //   const a = this.users.map(u => Object.assign({}, u))
+    //   localStorage.setItem('users', JSON.stringify(a))
+    // }
   },
 
   computed: {
@@ -148,9 +149,21 @@ export default {
   },
 
   methods: {
-    getUserFromLocalStorage() {
-      this.users = JSON.parse(localStorage.getItem('users')) || []
+
+    getUsersFromFireBase() {
+
+      db.collection('users')
+          .get()
+          .then(querySnapshot => {
+            const documents = querySnapshot.docs.map(doc => {
+              return {...doc.data(), storeId: doc.id}
+            })
+
+            this.users = documents
+
+          })
     },
+
     loadMap({map}) {
       this.map = map
 
@@ -162,17 +175,20 @@ export default {
       )
     },
     getUsers() {
+
       this.axios
           .get('https://jsonplaceholder.typicode.com/users')
           .then(response => {
             this.users = response.data
-
             this.map?.jumpTo({center: this.users[0].address.geo})
             return response.data
           })
           .then((users) => {
                 users.forEach(user => {
                   db.collection('users').add(user)
+                      .then(({id}) => {
+                        user.storeId = id
+                      })
                 })
               }
           )
@@ -182,6 +198,15 @@ export default {
       if (this.selectedUser) {
         this.selectedUser.address.geo.lat = lat
         this.selectedUser.address.geo.lng = lng
+        console.log(db.collection('users').doc())
+        db.collection('users').doc(this.selectedUser.storeId).update({
+          address: {
+            geo: {
+              lat: lat,
+              lng: lng
+            }
+          }
+        })
       }
     },
 
@@ -221,7 +246,8 @@ export default {
 
       this.users = u
 
-      localStorage.setItem('users', JSON.stringify(this.users))
+      db.collection('users').doc(user.storeId).update({name: this.editableUser.name})
+
     },
 
     setActiveUser(user) {
@@ -229,11 +255,11 @@ export default {
     },
   },
 
-  watch: {
-    users(newUsers) {
-      localStorage.setItem('users', JSON.stringify(newUsers))
-    }
-  },
+  // watch: {
+  //   users(newUsers) {
+  //     localStorage.setItem('users', JSON.stringify(newUsers))
+  //   }
+  // },
 
   components: {
     MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl, MglAttributionControl,
