@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
+import { firestorePlugin } from 'vuefire'
 
 import axios from 'axios'
 import VueAxios from 'vue-axios';
@@ -24,7 +25,9 @@ Vue.use(VueCompositionAPI);
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.use(VueAxios, axios)
+Vue.use(firestorePlugin)
 
 new Vue({
     render: h => h(App),
+
 }).$mount('#app')

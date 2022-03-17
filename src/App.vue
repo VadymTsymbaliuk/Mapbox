@@ -51,7 +51,8 @@
               </MglPopup>
             </MglMarker>
           </MglMap>
-          <div class="position-absolute top-0 bottom-auto bg-light bg-opacity-75 d-flex gap-2 p-2 rounded-2 mt-2 ml-2" id="menu">
+          <div class="position-absolute top-0 bottom-auto bg-light bg-opacity-75 d-flex gap-2 p-2 rounded-2 mt-2 ml-2"
+               id="menu">
             <div>
               <input id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
                      @change="changeMapStyle">
@@ -102,6 +103,7 @@ import MapboxGL from 'mapbox-gl'
 
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 
+import {db} from '@/db'
 
 export default {
   name: 'App',
@@ -114,9 +116,13 @@ export default {
     filterText: '',
     activeUser: {},
     editableUser: {},
-    selectedUser: null
+    selectedUser: null,
+    todos: [],
   }),
 
+  firestore: {
+    users: db.collection('users')
+  },
   mounted() {
     MapboxGL.accessToken = this.accessToken
 
@@ -127,7 +133,10 @@ export default {
       const a = this.users.map(u => Object.assign({}, u))
       localStorage.setItem('users', JSON.stringify(a))
     }
+
+    db.collection('users').add({hh:1})
   },
+
   computed: {
     filterUser() {
       return this.users.filter(user =>
@@ -135,9 +144,11 @@ export default {
       )
     },
   },
+
   updated() {
     this.$refs.map.map?.resize()
   },
+
   methods: {
     getUserFromLocalStorage() {
       this.users = JSON.parse(localStorage.getItem('users')) || []
@@ -159,7 +170,14 @@ export default {
             this.users = response.data
 
             this.map?.jumpTo({center: this.users[0].address.geo})
+            return response.data
           })
+          .then((users) => {
+                users.forEach(user => {
+                  db.collection('users').add(user)
+                })
+              }
+          )
     },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
@@ -211,14 +229,14 @@ export default {
     setActiveUser(user) {
       this.selectedUser = user
     },
-
-
   },
+
   watch: {
     users(newUsers) {
       localStorage.setItem('users', JSON.stringify(newUsers))
     }
   },
+
   components: {
     MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl, MglAttributionControl,
     MglGeolocateControl,
