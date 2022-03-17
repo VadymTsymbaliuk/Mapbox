@@ -133,8 +133,6 @@ export default {
       const a = this.users.map(u => Object.assign({}, u))
       localStorage.setItem('users', JSON.stringify(a))
     }
-
-    db.collection('users').add({hh:1})
   },
 
   computed: {
