@@ -1,15 +1,16 @@
 <template>
-  <div class="container mt-3">
+  <div class="container">
     <div class="row justify-content-center">
-      <div class="col-md-6">
+      <div class="col-md-8">
         <div class="card">
           <div class="card-header">Register</div>
           <div class="card-body">
             <div v-if="error" class="alert alert-danger">{{ error }}</div>
             <form action="#" @submit.prevent="submit">
-              <div class="form-group row ">
-                <div class="col mb-3 justify-content-center">
-                  <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
+              <div class="form-group row">
+                <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
+
+                <div class="col-md-6">
                   <input
                       id="name"
                       type="name"
@@ -21,8 +22,11 @@
                       v-model="form.name"
                   />
                 </div>
+              </div>
+
+              <div class="form-group row mb-0">
                 <div class="col-md-8 offset-md-4">
-                  <button class="btn btn-primary" type="submit">Register</button>
+                  <button type="submit" class="btn btn-primary">Register</button>
                 </div>
               </div>
             </form>
@@ -34,8 +38,7 @@
 </template>
 
 <script>
-// import firebase from "firebase/compat";
-import {db} from "@/db";
+import firebase from "firebase/compat";
 
 export default {
   name: "Registration",
@@ -47,23 +50,21 @@ export default {
       error: null
     };
   },
-
-  methods: {
-    submit() {
-      db.collection('users')
-          .add({
-            name: this.form.name,
-            geo: {
-              lng: null,
-              lat: null,
-            }
+  methods:{
+    submit(){
+      firebase
+          .auth()
+          .createUserWithName(this.form.name)
+          .then(data => {
+            data.user
+                .updateProfile({
+                  displayName: this.form.name
+                })
+                .then(() => {});
           })
-          .then((d) => d.get())
-          .then((d) => {
-            localStorage.setItem('auth', JSON.stringify({...d.data(), id: d.id}))
-            this.$router.push({name: 'home'})
-          })
-
+          .catch(err => {
+            this.error = err.message;
+          });
     }
   }
 }

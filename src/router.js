@@ -11,39 +11,11 @@ Vue.use(VueRouter)
 
 const router = new VueRouter({
     routes: [
-        {
-            path: '/',
-            name: 'home',
-            component: Home,
-            meta: {auth: true}
-
-        },
-        {
-            path: '/login',
-            name: 'login',
-            component: Login,
-            meta: {auth: false}
-        },
-        {
-            path: '/registration',
-            name: 'registration',
-            component: Registration,
-            meta: {auth: false}
-        }
+        {path: '/', component: Home},
+        {path: '/login', component: Login},
+        {path: '/bar', component: Registration}
     ],
     mode: 'history'
-})
-router.beforeEach((to, from, next) => {
-
-    if (to.meta.auth) {
-        if (localStorage.getItem('auth')) {
-            next()
-        } else {
-            next({name: "login"})
-        }
-    }else{
-        next()
-    }
 })
 
 export default router

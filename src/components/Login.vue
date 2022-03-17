@@ -7,10 +7,10 @@
           <div class="card-body">
             <div v-if="error" class="alert alert-danger">{{ error }}</div>
             <form action="#" @submit.prevent="submit">
-              <div class="form-group row justify-content-center">
-                <div class="col-md-6 mb-3">
-                  <label for="name" class="col-form-label text-md-right">Name</label>
+              <div class="form-group row">
+                <label for="name" class="col-md-4 col-form-label text-md-right">Email</label>
 
+                <div class="col-md-6">
                   <input
                       id="name"
                       type="name"
@@ -22,12 +22,12 @@
                       v-model="form.name"
                   />
                 </div>
-                <div class="col-md-8 d-flex justify-content-around ">
-                  <b-button variant="outline-success" @click.stop="login">Login</b-button>
-                  <b-button variant="outline-primary" @click="$router.push('/registration')">Sign up</b-button>
+              </div>
+              <div class="form-group row mb-0">
+                <div class="col-md-8 offset-md-4">
+                  <button type="submit" class="btn btn-primary">Login</button>
                 </div>
               </div>
-
             </form>
           </div>
         </div>
@@ -38,9 +38,7 @@
 
 
 <script>
-// import firebase from "firebase/compat";
-
-import {db} from "@/db";
+import firebase from "firebase/compat";
 
 export default {
   name: "Login",
@@ -52,36 +50,18 @@ export default {
       error: null
     }
   },
-
-  methods: {
-    login() {
-
-      db.collection('users')
-          .where('name', '==', this.form.name)
-          .get()
-          .then(querySnapshot => {
-            this.user = querySnapshot.docs.map(doc => {
-              return {...doc.data(), storeId: doc.id}
-            })[0]
-
-            if (!this.user) {
-              this.makeToast(true)
-            } else {
-              localStorage.setItem('auth', JSON.stringify(this.user))
-              this.$router.push({name: 'home'})
-            }
-          })
-
-    },
-    // eslint-disable-next-line no-unused-vars
-    makeToast(append = false) {
-      // console.log(this.$bvToast)
-      this.$bvToast.toast(`This is toast number`, {
-        title: 'BootstrapVue Toast',
-        // autoHideDelay: 5000,
-        // appendToast: append
+  methods:{
+    submit(){
+      firebase
+          .auth()
+          .signInWithName(this.form.name)
+      .then(data=>{
+        console.log(data)
+        this.$router.replace({name: "Dachboard"})
+      }).catch(err =>{
+        this.error = err.message
       })
-    },
+    }
   }
 }
 </script>
