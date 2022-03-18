@@ -107,6 +107,7 @@ import {db} from '@/db'
 
 export default {
   name: 'App',
+
   data: () => ({
     map: null,
     color: 'blue',
@@ -118,10 +119,14 @@ export default {
     editableUser: {},
     selectedUser: null,
     todos: [],
+
   }),
 
   firestore: {
     users: db.collection('users')
+  },
+  created() {
+    this.auth = localStorage.getItem('auth') !== null
   },
   mounted() {
     MapboxGL.accessToken = this.accessToken
@@ -143,18 +148,23 @@ export default {
   },
 
   methods: {
+    changeUserState() {
+      if (this.auth) {
+        localStorage.removeItem('auth')
+        this.$router.push({name: 'login'})
+      } else {
+        localStorage.setItem('auth', true)
+        this.auth = true
+      }
+    },
 
     getUsersFromFireBase() {
-
       db.collection('users')
           .get()
           .then(querySnapshot => {
-            const documents = querySnapshot.docs.map(doc => {
+            this.users = querySnapshot.docs.map(doc => {
               return {...doc.data(), storeId: doc.id}
             })
-
-            this.users = documents
-
           })
     },
 
@@ -168,25 +178,7 @@ export default {
           })
       )
     },
-    getUsers() {
 
-      this.axios
-          .get('https://jsonplaceholder.typicode.com/users')
-          .then(response => {
-            this.users = response.data
-            this.map?.jumpTo({center: this.users[0].address.geo})
-            return response.data
-          })
-          .then((users) => {
-                users.forEach(user => {
-                  db.collection('users').add(user)
-                      .then(({id}) => {
-                        user.storeId = id
-                      })
-                })
-              }
-          )
-    },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
       if (this.selectedUser) {
@@ -248,7 +240,6 @@ export default {
       this.selectedUser = user
     },
   },
-
 
 
   components: {
