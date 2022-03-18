@@ -63,6 +63,7 @@ export default {
             this.user = querySnapshot.docs.map(doc => {
               return {...doc.data(), storeId: doc.id}
             })[0]
+
             if (!this.user) {
               this.makeToast(true)
             } else {

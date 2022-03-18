@@ -22,7 +22,7 @@
                   />
                 </div>
                 <div class="col-md-8 offset-md-4">
-                  <button type="submit" class="btn btn-primary">Register</button>
+                  <button class="btn btn-primary" type="submit">Register</button>
                 </div>
               </div>
             </form>
@@ -47,11 +47,22 @@ export default {
       error: null
     };
   },
-  firestore: {
-    users: db.collection('users')
-  },
+
   methods: {
     submit() {
+      db.collection('users')
+          .add({
+            name: this.form.name,
+            geo: {
+              lng: null,
+              lat: null,
+            }
+          })
+          .then((d) => d.get())
+          .then((d) => {
+            localStorage.setItem('auth', JSON.stringify({...d.data(), id: d.id}))
+            this.$router.push({name: 'home'})
+          })
 
     }
   }
