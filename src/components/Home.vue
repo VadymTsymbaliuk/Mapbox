@@ -51,30 +51,30 @@
               </MglPopup>
             </MglMarker>
           </MglMap>
-          <div class="position-absolute top-0 bottom-auto bg-light bg-opacity-75 d-flex gap-2 p-2 rounded-2 mt-2 ml-2"
+          <div class="change-map-style position-absolute bg-light  rounded d-flex gap-2 p-1 mt-2 ml-2"
                id="menu">
-            <div>
-              <input id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
+            <div class="pl-1">
+              <input class="mr-1" id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
                      @change="changeMapStyle">
               <label for="satellite-v9">satellite</label>
             </div>
-            <div>
-              <input id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10"
+            <div class="pl-1">
+              <input class="mr-1" id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10"
                      @change="changeMapStyle">
               <label for="light-v10">light</label>
             </div>
-            <div>
-              <input id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10"
+            <div class="pl-1">
+              <input class="mr-1" id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10"
                      @change="changeMapStyle">
               <label for="dark-v10">dark</label>
             </div>
-            <div>
-              <input id="outdoors-v11" type="radio" name="rtoggle" value="mapbox://styles/mapbox/outdoors-v11"
+            <div class="pl-1">
+              <input class="mr-1" id="outdoors-v11" type="radio" name="rtoggle" value="mapbox://styles/mapbox/outdoors-v11"
                      @change="changeMapStyle">
               <label for="outdoors-v11">streets</label>
             </div>
-            <div>
-              <input id="navigation-day" type="radio" name="rtoggle" value="mapbox://styles/mapbox/navigation-day-v1"
+            <div class="pl-1">
+              <input class="mr-1" id="navigation-day" type="radio" name="rtoggle" value="mapbox://styles/mapbox/navigation-day-v1"
                      @change="changeMapStyle">
               <label for="navigation-day">navigation day</label>
             </div>
@@ -107,6 +107,7 @@ import {db} from '@/db'
 
 export default {
   name: 'App',
+
   data: () => ({
     map: null,
     color: 'blue',
@@ -118,10 +119,14 @@ export default {
     editableUser: {},
     selectedUser: null,
     todos: [],
+
   }),
 
   firestore: {
     users: db.collection('users')
+  },
+  created() {
+    this.auth = localStorage.getItem('auth') !== null
   },
   mounted() {
     MapboxGL.accessToken = this.accessToken
@@ -144,17 +149,14 @@ export default {
 
   methods: {
 
-    getUsersFromFireBase() {
 
+    getUsersFromFireBase() {
       db.collection('users')
           .get()
           .then(querySnapshot => {
-            const documents = querySnapshot.docs.map(doc => {
+            this.users = querySnapshot.docs.map(doc => {
               return {...doc.data(), storeId: doc.id}
             })
-
-            this.users = documents
-
           })
     },
 
@@ -168,31 +170,13 @@ export default {
           })
       )
     },
-    getUsers() {
 
-      this.axios
-          .get('https://jsonplaceholder.typicode.com/users')
-          .then(response => {
-            this.users = response.data
-            this.map?.jumpTo({center: this.users[0].address.geo})
-            return response.data
-          })
-          .then((users) => {
-                users.forEach(user => {
-                  db.collection('users').add(user)
-                      .then(({id}) => {
-                        user.storeId = id
-                      })
-                })
-              }
-          )
-    },
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
       if (this.selectedUser) {
         this.selectedUser.address.geo.lat = lat
         this.selectedUser.address.geo.lng = lng
-        console.log(db.collection('users').doc())
+
         db.collection('users').doc(this.selectedUser.storeId).update({
           address: {
             geo: {
@@ -250,7 +234,6 @@ export default {
   },
 
 
-
   components: {
     MglMap, MglMarker, MglPopup, MglNavigationControl, MglScaleControl, MglAttributionControl,
     MglGeolocateControl,
@@ -286,6 +269,9 @@ export default {
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
+}
+.change-map-style{
+  top: 0;
 }
 
 </style>
