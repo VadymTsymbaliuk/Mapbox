@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <section class="container-fluid">
+      <b-button variant="outline-primary" class="my-3" @click="$router.push('/login')">Log out</b-button>
       <div class="row">
         <div class="col-4 overflow-scroll">
           <b-form-input v-model="filterText" class="mb-3"/>
@@ -32,7 +33,7 @@
             <MglFullscreenControl/>
 
             <MglMarker v-for="user of filterUser" :key="user.id"
-                       :coordinates="[user.address.geo.lng, user.address.geo.lat]"
+                       :coordinates="[user.geo.lng, user.geo.lat]"
                        anchor="bottom"
                        :ref="`marker${user.id}`">
               <template slot="marker">
@@ -54,7 +55,8 @@
           <div class="change-map-style position-absolute bg-light  rounded d-flex gap-2 p-1 mt-2 ml-2"
                id="menu">
             <div class="pl-1">
-              <input class="mr-1" id="satellite-v9" type="radio" name="rtoggle" value="mapbox://styles/mapbox/satellite-v9"
+              <input class="mr-1" id="satellite-v9" type="radio" name="rtoggle"
+                     value="mapbox://styles/mapbox/satellite-v9"
                      @change="changeMapStyle">
               <label for="satellite-v9">satellite</label>
             </div>
@@ -69,12 +71,14 @@
               <label for="dark-v10">dark</label>
             </div>
             <div class="pl-1">
-              <input class="mr-1" id="outdoors-v11" type="radio" name="rtoggle" value="mapbox://styles/mapbox/outdoors-v11"
+              <input class="mr-1" id="outdoors-v11" type="radio" name="rtoggle"
+                     value="mapbox://styles/mapbox/outdoors-v11"
                      @change="changeMapStyle">
               <label for="outdoors-v11">streets</label>
             </div>
             <div class="pl-1">
-              <input class="mr-1" id="navigation-day" type="radio" name="rtoggle" value="mapbox://styles/mapbox/navigation-day-v1"
+              <input class="mr-1" id="navigation-day" type="radio" name="rtoggle"
+                     value="mapbox://styles/mapbox/navigation-day-v1"
                      @change="changeMapStyle">
               <label for="navigation-day">navigation day</label>
             </div>
@@ -125,18 +129,15 @@ export default {
   firestore: {
     users: db.collection('users')
   },
+
   created() {
-    this.auth = localStorage.getItem('auth') !== null
-  },
-  mounted() {
     MapboxGL.accessToken = this.accessToken
-
     this.getUsersFromFireBase()
-
   },
 
   computed: {
     filterUser() {
+
       return this.users.filter(user =>
           user.name.toLowerCase().includes(this.filterText.toLowerCase())
       )
@@ -174,23 +175,22 @@ export default {
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
       if (this.selectedUser) {
-        this.selectedUser.address.geo.lat = lat
-        this.selectedUser.address.geo.lng = lng
+        this.selectedUser.geo.lat = lat
+        this.selectedUser.geo.lng = lng
 
         db.collection('users').doc(this.selectedUser.storeId).update({
-          address: {
-            geo: {
-              lat: lat,
-              lng: lng
-            }
+          geo: {
+            lat: lat,
+            lng: lng
           }
+
         })
       }
     },
 
     userHover(user) {
       this.map?.flyTo({
-        center: [user.address.geo.lng, user.address.geo.lat,],
+        center: [user.geo.lng, user.geo.lat,],
         zoom: 4,
         speed: 1,
         curve: 1,
@@ -270,7 +270,8 @@ export default {
   border-radius: 50%;
   cursor: pointer;
 }
-.change-map-style{
+
+.change-map-style {
   top: 0;
 }
 
