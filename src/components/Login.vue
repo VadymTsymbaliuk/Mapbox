@@ -64,10 +64,11 @@ export default {
               return {...doc.data(), storeId: doc.id}
             })[0]
             if (!this.user) {
+              console.log(this.user)
               this.makeToast(true)
             } else {
               localStorage.setItem('auth', JSON.stringify(this.user))
-              this.$router.push({name: 'home'})
+              this.$router.push({path: '/'})
             }
           })
 

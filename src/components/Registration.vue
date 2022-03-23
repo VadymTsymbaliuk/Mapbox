@@ -38,7 +38,8 @@
 </template>
 
 <script>
-import firebase from "firebase/compat";
+// import firebase from "firebase/compat";
+import {db} from "@/db";
 
 export default {
   name: "Registration",
@@ -51,21 +52,23 @@ export default {
     };
   },
   methods:{
+
+
     submit(){
-      firebase
-          .auth()
-          .createUserWithName(this.form.name)
-          .then(data => {
-            data.user
-                .updateProfile({
-                  displayName: this.form.name
-                })
-                .then(() => {});
+      db.collection('users')
+          .add({
+            name: this.form.name,
+            geo: {
+              lng: null,
+              lat: null,
+            }
           })
-          .catch(err => {
-            this.error = err.message;
-          });
-    }
+          .then((d) => d.get())
+          .then((d) => {
+            localStorage.setItem('auth', JSON.stringify({...d.data(), id: d.id}))
+            this.$router.push({path: '/'})
+          })
+    },
   }
 }
 </script>

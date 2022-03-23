@@ -14,9 +14,9 @@
             >
               <div class="d-flex justify-content-between align-items-center text-center p-1">
                 <p class="m-0">{{ user.name }}</p>
-                <b-button v-b-modal="`user-modal-${user.id}`" @click.stop="editUserName(user)">Edit name</b-button>
+                <b-button v-b-modal="`user-modal-${user.storeId}`" @click.stop="editUserName(user)">Edit name</b-button>
               </div>
-              <b-modal :id="`user-modal-${user.id}`" @ok="saveUserName(user)">
+              <b-modal :id="`user-modal-${user.storeId}`" @ok="saveUserName(user)">
                 <b-form-input v-model="editableUser.name"/>
               </b-modal>
             </b-list-group-item>
@@ -214,10 +214,13 @@ export default {
 
     editUserName(user) {
       this.editableUser = {...user}
+
     },
 
     saveUserName(user) {
-      const userIndex = this.users.indexOf(this.users.find(u => u.id === user.id))
+      console.log(user.storeId)
+
+      const userIndex = this.users.indexOf(this.users.find(u => u.storeId === user.storeId))
 
       const u = [...this.users]
       u[userIndex].name = this.editableUser.name
