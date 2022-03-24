@@ -10,6 +10,8 @@
   "dependencies": {
     "@mapbox/mapbox-gl-geocoder": "^5.0.0",
     "@vue/composition-api": "^1.4.9",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.21.2",
     "circular-json": "^0.5.9",
     "core-js": "^3.6.5",
     "firebase": "^9.6.8",
@@ -21,8 +23,6 @@
     "vuefire": "^2.2.5"
   },
   "devDependencies": {
-    "bootstrap": "^4.5.3",
-    "bootstrap-vue": "^2.21.2",
     "@vue/cli-plugin-babel": "~4.5.15",
     "@vue/cli-plugin-eslint": "~4.5.15",
     "@vue/cli-service": "~4.5.15",
