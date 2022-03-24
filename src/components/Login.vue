@@ -7,8 +7,8 @@
           <div class="card-body">
             <div v-if="error" class="alert alert-danger">{{ error }}</div>
             <form action="#" @submit.prevent="submit">
-              <div class="form-group row justify-content-center">
-                <div class="col-md-6 mb-3">
+              <div class="form-group row d-flex flex-column justify-content-center align-items-center">
+                <div class="col-6 mb-3">
                   <label for="name" class="col-form-label text-md-right">Name</label>
 
                   <input
@@ -22,7 +22,7 @@
                       v-model="form.name"
                   />
                 </div>
-                <div class="col-md-8 d-flex justify-content-around ">
+                <div class="col-6 d-flex justify-content-between ">
                   <b-button variant="outline-success" @click.stop="login">Login</b-button>
                   <b-button variant="outline-primary" @click="$router.push('/registration')">Sign up</b-button>
                 </div>

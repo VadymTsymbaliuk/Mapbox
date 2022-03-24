@@ -1,11 +1,13 @@
 <template>
   <div id="app">
     <section class="container-fluid">
-      <b-button variant="outline-primary" class="my-3" @click="$router.push('/login')">Log out</b-button>
       <div class="row">
-        <div class="col-4 overflow-scroll">
-          <b-form-input v-model="filterText" class="mb-3"/>
-          <b-list-group>
+        <div class="col-4 d-flex flex-column">
+          <div class="my-3">
+            <b-button variant="outline-primary" class="mb-3" @click="logOut">Log out</b-button>
+            <b-form-input v-model="filterText"/>
+          </div>
+          <b-list-group class="overflow-scroll">
             <b-list-group-item ref="groupItem" v-for="user of filterUser" :key="user.id"
                                @mouseenter="userHover(user)"
                                @mouseleave="userBlur(user)"
@@ -150,7 +152,6 @@ export default {
 
   methods: {
 
-
     getUsersFromFireBase() {
       db.collection('users')
           .get()
@@ -171,7 +172,6 @@ export default {
           })
       )
     },
-
 
     mapClick({mapboxEvent: {lngLat: {lat, lng}}}) {
       if (this.selectedUser) {
@@ -234,6 +234,10 @@ export default {
     setActiveUser(user) {
       this.selectedUser = user
     },
+    logOut(){
+      localStorage.clear()
+     this.$router.push('/login')
+    },
   },
 
 
@@ -276,6 +280,10 @@ export default {
 
 .change-map-style {
   top: 0;
+}
+
+.overflow-scroll{
+  overflow: scroll;
 }
 
 </style>
