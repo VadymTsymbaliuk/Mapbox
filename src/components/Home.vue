@@ -1,94 +1,95 @@
 <template>
-  <div id="app">
-    <section class="container-fluid">
-      <div class="row">
-        <div class="col-4 d-flex flex-column">
-          <div class="my-3">
-            <b-button variant="outline-primary" class="mb-3" @click="logOut">Log out</b-button>
-            <b-form-input v-model="filterText"/>
-          </div>
-          <b-list-group class="overflow-scroll">
-            <b-list-group-item ref="groupItem" v-for="user of filterUser" :key="user.id"
-                               @mouseenter="userHover(user)"
-                               @mouseleave="userBlur(user)"
-                               @click="setActiveUser(user)"
-                               v-bind:class="{active: user===selectedUser}"
-            >
-              <div class="d-flex justify-content-between align-items-center text-center p-1">
-                <p class="m-0">{{ user.name }}</p>
-                <b-button v-b-modal="`user-modal-${user.storeId}`" @click.stop="editUserName(user)">Edit name</b-button>
-              </div>
-              <b-modal :id="`user-modal-${user.storeId}`" @ok="saveUserName(user)">
-                <b-form-input v-model="editableUser.name"/>
-              </b-modal>
-            </b-list-group-item>
-          </b-list-group>
-        </div>
-        <div class="col-8 position-relative">
-          <MglMap ref="map" container="map-test" :zoom="1" :access-token="accessToken"
-                  :map-style="mapStyle" @load="loadMap" @click="mapClick"
-          >
-            <MglNavigationControl position="bottom-left" :showCompass="false"/>
-            <MglScaleControl/>
-            <MglAttributionControl/>
-            <MglGeolocateControl position="top-right"/>
-            <MglFullscreenControl/>
 
-            <MglMarker v-for="user of filterUser" :key="user.id"
-                       :coordinates="[user.geo.lng, user.geo.lat]"
-                       anchor="bottom"
-                       :ref="`marker${user.id}`">
-              <template slot="marker">
-                <div class="marker" :class="{'active-map-marker': user === activeUser}"></div>
-              </template>
-              <MglPopup v-for="user of filterUser" :key="user.id" :closeButton="true" :showed="false">
-                <b-card class="text-center">
-                  <div>
-                    {{ user.name }}
-                    {{ user.phone }}
-                  </div>
-                  <div>
-                    {{ user.email }}
-                  </div>
-                </b-card>
-              </MglPopup>
-            </MglMarker>
-          </MglMap>
-          <div class="change-map-style position-absolute bg-light  rounded d-flex gap-2 p-1 mt-2 ml-2"
-               id="menu">
-            <div class="pl-1">
-              <input class="mr-1" id="satellite-v9" type="radio" name="rtoggle"
-                     value="mapbox://styles/mapbox/satellite-v9"
-                     @change="changeMapStyle">
-              <label for="satellite-v9">satellite</label>
+    <div id="app">
+      <section class="container-fluid">
+        <div class="row">
+          <div class="col-4 d-flex flex-column">
+            <div class="my-3">
+              <b-button variant="outline-primary" class="mb-3" @click="logOut">Log out</b-button>
+              <b-form-input v-model="filterText"/>
             </div>
-            <div class="pl-1">
-              <input class="mr-1" id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10"
-                     @change="changeMapStyle">
-              <label for="light-v10">light</label>
-            </div>
-            <div class="pl-1">
-              <input class="mr-1" id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10"
-                     @change="changeMapStyle">
-              <label for="dark-v10">dark</label>
-            </div>
-            <div class="pl-1">
-              <input class="mr-1" id="outdoors-v11" type="radio" name="rtoggle"
-                     value="mapbox://styles/mapbox/outdoors-v11"
-                     @change="changeMapStyle">
-              <label for="outdoors-v11">streets</label>
-            </div>
-            <div class="pl-1">
-              <input class="mr-1" id="navigation-day" type="radio" name="rtoggle"
-                     value="mapbox://styles/mapbox/navigation-day-v1"
-                     @change="changeMapStyle">
-              <label for="navigation-day">navigation day</label>
+            <b-list-group class="overflow-scroll">
+              <b-list-group-item ref="groupItem" v-for="user of filterUser" :key="user.id"
+                                 @mouseenter="userHover(user)"
+                                 @mouseleave="userBlur(user)"
+                                 @click="setActiveUser(user)"
+                                 v-bind:class="{active: user===selectedUser}"
+              >
+                <div class="d-flex justify-content-between align-items-center text-center p-1">
+                  <p class="m-0">{{ user.name }}</p>
+                  <b-button v-b-modal="`user-modal-${user.storeId}`" @click.stop="editUserName(user)">Edit name</b-button>
+                </div>
+                <b-modal :id="`user-modal-${user.storeId}`" @ok="saveUserName(user)">
+                  <b-form-input v-model="editableUser.name"/>
+                </b-modal>
+              </b-list-group-item>
+            </b-list-group>
+          </div>
+          <div class="col-8 position-relative">
+            <MglMap ref="map" container="map-test" :zoom="1" :access-token="accessToken"
+                    :map-style="mapStyle" @load="loadMap" @click="mapClick"
+            >
+              <MglNavigationControl position="bottom-left" :showCompass="false"/>
+              <MglScaleControl/>
+              <MglAttributionControl/>
+              <MglGeolocateControl position="top-right"/>
+              <MglFullscreenControl/>
+
+              <MglMarker v-for="user of filterUser" :key="user.id"
+                         :coordinates="[user.geo.lng, user.geo.lat]"
+                         anchor="bottom"
+                         :ref="`marker${user.id}`">
+                <template slot="marker">
+                  <div class="marker" :class="{'active-map-marker': user === activeUser}"></div>
+                </template>
+                <MglPopup v-for="user of filterUser" :key="user.id" :closeButton="true" :showed="false">
+                  <b-card class="text-center">
+                    <div>
+                      {{ user.name }}
+                      {{ user.phone }}
+                    </div>
+                    <div>
+                      {{ user.email }}
+                    </div>
+                  </b-card>
+                </MglPopup>
+              </MglMarker>
+            </MglMap>
+            <div class="change-map-style position-absolute bg-light  rounded d-flex gap-2 p-1 mt-2 ml-2"
+                 id="menu">
+              <div class="pl-1">
+                <input class="mr-1" id="satellite-v9" type="radio" name="rtoggle"
+                       value="mapbox://styles/mapbox/satellite-v9"
+                       @change="changeMapStyle">
+                <label for="satellite-v9">satellite</label>
+              </div>
+              <div class="pl-1">
+                <input class="mr-1" id="light-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/light-v10"
+                       @change="changeMapStyle">
+                <label for="light-v10">light</label>
+              </div>
+              <div class="pl-1">
+                <input class="mr-1" id="dark-v10" type="radio" name="rtoggle" value="mapbox://styles/mapbox/dark-v10"
+                       @change="changeMapStyle">
+                <label for="dark-v10">dark</label>
+              </div>
+              <div class="pl-1">
+                <input class="mr-1" id="outdoors-v11" type="radio" name="rtoggle"
+                       value="mapbox://styles/mapbox/outdoors-v11"
+                       @change="changeMapStyle">
+                <label for="outdoors-v11">streets</label>
+              </div>
+              <div class="pl-1">
+                <input class="mr-1" id="navigation-day" type="radio" name="rtoggle"
+                       value="mapbox://styles/mapbox/navigation-day-v1"
+                       @change="changeMapStyle">
+                <label for="navigation-day">navigation day</label>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  </div>
+      </section>
+    </div>
 
 </template>
 
