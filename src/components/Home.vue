@@ -1,5 +1,4 @@
 <template>
-
     <div id="app">
       <section class="container-fluid">
         <div class="row">
